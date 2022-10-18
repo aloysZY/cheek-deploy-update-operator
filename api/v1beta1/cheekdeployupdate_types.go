@@ -31,7 +31,7 @@ type CheekDeployUpdateSpec struct {
 	// Foo is an example field of CheekDeployUpdate. Edit cheekdeployupdate_types.go to remove/update
 	// Foo string `json:"foo,omitempty"`
 
-	Deployment          string `json:"deployment"`
+	DeploymentName      string `json:"deploymentName"`
 	DeploymentNamespace string `json:"deploymentNamespace"`
 	DeploymentImage     string `json:"deploymentImage"`
 }

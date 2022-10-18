@@ -35,15 +35,15 @@ spec:
           spec:
             description: CheekDeployUpdateSpec defines the desired state of CheekDeployUpdate
             properties:
-              deployment:
-                type: string
               deploymentImage:
+                type: string
+              deploymentName:
                 type: string
               deploymentNamespace:
                 type: string
             required:
-            - deployment
             - deploymentImage
+            - deploymentName
             - deploymentNamespace
             type: object
           status:
