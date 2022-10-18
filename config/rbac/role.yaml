@@ -1,0 +1,33 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  creationTimestamp: null
+  name: manager-role
+rules:
+- apiGroups:
+  - aloys.cheekdeployupdate.tech
+  resources:
+  - cheekdeployupdates
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - aloys.cheekdeployupdate.tech
+  resources:
+  - cheekdeployupdates/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - aloys.cheekdeployupdate.tech
+  resources:
+  - cheekdeployupdates/status
+  verbs:
+  - get
+  - patch
+  - update

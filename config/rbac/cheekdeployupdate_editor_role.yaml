@@ -1,0 +1,24 @@
+# permissions for end users to edit cheekdeployupdates.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cheekdeployupdate-editor-role
+rules:
+- apiGroups:
+  - aloys.cheekdeployupdate.tech
+  resources:
+  - cheekdeployupdates
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - aloys.cheekdeployupdate.tech
+  resources:
+  - cheekdeployupdates/status
+  verbs:
+  - get

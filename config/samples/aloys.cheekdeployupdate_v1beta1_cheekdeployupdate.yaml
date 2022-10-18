@@ -1,0 +1,10 @@
+apiVersion: aloys.cheekdeployupdate.tech/v1beta1
+kind: CheekDeployUpdate
+metadata:
+  name: cheekdeployupdate-sample
+spec:
+  # TODO(user): Add fields here
+  deployment: dep-mysql
+#  之后设置命名空间为空就是default
+  deploymentNamespcae: default
+  deploymentImages: nginx
