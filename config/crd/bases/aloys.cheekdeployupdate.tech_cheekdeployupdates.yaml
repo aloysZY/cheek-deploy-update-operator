@@ -9,13 +9,25 @@ metadata:
 spec:
   group: aloys.cheekdeployupdate.tech
   names:
+    categories:
+    - all
     kind: CheekDeployUpdate
     listKind: CheekDeployUpdateList
     plural: cheekdeployupdates
+    shortNames:
+    - cdu
     singular: cheekdeployupdate
-  scope: Namespaced
+  scope: Cluster
   versions:
-  - name: v1beta1
+  - additionalPrinterColumns:
+    - description: image version
+      jsonPath: .spec.deploymentImage
+      name: Image
+      type: string
+    - jsonPath: .metadata.creationTimestamp
+      name: Age
+      type: date
+    name: v1beta1
     schema:
       openAPIV3Schema:
         description: CheekDeployUpdate is the Schema for the cheekdeployupdates API

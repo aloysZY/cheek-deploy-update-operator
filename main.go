@@ -18,11 +18,14 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"os"
 
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
 	// to ensure that exec-entrypoint and run can make use of them.
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
+
+	cduruntime "runtime"
 
 	"k8s.io/apimachinery/pkg/runtime"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
@@ -33,6 +36,7 @@ import (
 
 	aloyscheekdeployupdatev1beta1 "cheek-deploy-update-operator/api/v1beta1"
 	"cheek-deploy-update-operator/controllers"
+	cduversion "cheek-deploy-update-operator/version"
 	// +kubebuilder:scaffold:imports
 )
 
@@ -64,7 +68,7 @@ func main() {
 	flag.Parse()
 
 	ctrl.SetLogger(zap.New(zap.UseFlagOptions(&opts)))
-
+	printVersion()
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
 		Scheme:                 scheme,
 		MetricsBindAddress:     metricsAddr,
@@ -112,4 +116,12 @@ func main() {
 		setupLog.Error(err, "problem running manager")
 		os.Exit(1)
 	}
+}
+
+func printVersion() {
+	setupLog.Info(fmt.Sprintf("Go Version: %s", cduruntime.Version()))
+	setupLog.Info(fmt.Sprintf("Go OS/Arch: %s/%s", cduruntime.GOOS, cduruntime.GOARCH))
+	setupLog.Info(fmt.Sprintf("Operator Version: %s", cduversion.Version))
+	setupLog.Info(fmt.Sprintf("Git Commit: %s", cduversion.GitCommit))
+	setupLog.Info(fmt.Sprintf("Build Date: %s", cduversion.BuildDate))
 }
