@@ -23,6 +23,12 @@ import (
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
+// type CheekDeployUpdateSpecDeploy struct {
+// 	DeploymentName      string `json:"deploymentName"`
+// 	DeploymentNamespace string `json:"deploymentNamespace"`
+// 	DeploymentImage     string `json:"deploymentImage"`
+// }
+
 // CheekDeployUpdateSpec defines the desired state of CheekDeployUpdate
 type CheekDeployUpdateSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
@@ -30,6 +36,7 @@ type CheekDeployUpdateSpec struct {
 
 	// Foo is an example field of CheekDeployUpdate. Edit cheekdeployupdate_types.go to remove/update
 	// Foo string `json:"foo,omitempty"`
+	// Deployment []CheekDeployUpdateSpecDeploy `json:"deployment,omitempty"`
 
 	DeploymentName      string `json:"deploymentName"`
 	DeploymentNamespace string `json:"deploymentNamespace"`
@@ -42,8 +49,13 @@ type CheekDeployUpdateStatus struct {
 	// Important: Run "make" to regenerate code after modifying this file
 }
 
+/*// +kubebuilder:printcolumn:name="Replicas",type="integer",JSONPath=".spec.deployment.replicas"*/
+
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
+// +kubebuilder:printcolumn:name="Image",type="string",JSONPath=".spec.deploymentImage",description="image version"
+// +kubebuilder:printcolumn:name="Age",type="date",JSONPath=".metadata.creationTimestamp"
+// +kubebuilder:resource:categories="all",shortName="cdu",scope="Cluster"
 
 // CheekDeployUpdate is the Schema for the cheekdeployupdates API
 type CheekDeployUpdate struct {

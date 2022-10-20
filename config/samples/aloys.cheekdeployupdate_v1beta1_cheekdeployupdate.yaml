@@ -3,8 +3,23 @@ kind: CheekDeployUpdate
 metadata:
   name: cheekdeployupdate-sample
 spec:
-  # TODO(user): Add fields here
-  deploymentName: dep-mysql
-#  之后设置命名空间为空就是default
-  deploymentNamespace: default
-  deploymentImage: nginx
+  deploymentName: dep
+  #  之后设置命名空间为空就是default
+  deploymentNamespace: dev
+  deploymentImage: nginx:1.22.0
+#  deployment:
+#    # TODO(user): Add fields here
+#    - deploymentName: dep-xx
+#  #  之后设置命名空间为空就是default
+#      deploymentNamespace: dev
+#      deploymentImage: nginx
+#
+#    - deploymentName: dep
+#        #  之后设置命名空间为空就是default
+#      deploymentNamespace: dev
+#      deploymentImage: nginx
+#
+#    - deploymentName: dep
+#        #  之后设置命名空间为空就是default
+#      deploymentNamespace: default
+#      deploymentImage: nginx
