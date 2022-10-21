@@ -43,6 +43,7 @@ type CheekDeployUpdateReconciler struct {
 }
 
 // +kubebuilder:rbac:groups=apps,resources=deployments,verbs=get;list;watch;create;update
+// +kubebuilder:rbac:groups="",resources=pods,verbs=list;watch
 // +kubebuilder:rbac:groups=aloys.cheekdeployupdate.tech,resources=cheekdeployupdates,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=aloys.cheekdeployupdate.tech,resources=cheekdeployupdates/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=aloys.cheekdeployupdate.tech,resources=cheekdeployupdates/finalizers,verbs=update
