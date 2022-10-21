@@ -6,7 +6,7 @@ spec:
   deploymentName: dep
   #  之后设置命名空间为空就是default
   deploymentNamespace: dev
-  deploymentImage: nginx:1.22.0
+  deploymentImage: nginx
 #  deployment:
 #    # TODO(user): Add fields here
 #    - deploymentName: dep-xx
