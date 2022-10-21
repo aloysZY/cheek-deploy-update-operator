@@ -61,6 +61,7 @@ func (r *CheekDeployUpdateReconciler) Reconcile(ctx context.Context, req ctrl.Re
 
 	// TODO(user): your logic here
 	// 检查自定义 cr 是否存在,获取 cr 设置的信息
+	start := time.Now()
 	cheekDeployUpdate := aloyscheekdeployupdatev1beta1.CheekDeployUpdate{}
 	if err := r.Get(ctx, req.NamespacedName, &cheekDeployUpdate); err != nil {
 		r.logger.Error(err, "unable to fetch cheekDeployUpdate")
@@ -87,7 +88,7 @@ func (r *CheekDeployUpdateReconciler) Reconcile(ctx context.Context, req ctrl.Re
 			// 执行更新后直接去请求，资源状态可能还没变更
 			r.logger.Info("The upgrade is in progress", "deployment name", deployment.Name)
 			// 1秒日志刷新的太快了，这里需要优化
-			time.Sleep(time.Second * 30)
+			time.Sleep(time.Second * 15)
 			if err := r.Get(ctx, types.NamespacedName{
 				Namespace: deployment.Namespace,
 				Name:      deployment.Name,
@@ -152,6 +153,9 @@ func (r *CheekDeployUpdateReconciler) Reconcile(ctx context.Context, req ctrl.Re
 	}
 
 	r.logger.Info("deployment as well as operation completion", "deployment name", deployment.Name, "deployment image", r.newImage)
+
+	cost := time.Since(start)
+	r.logger.Info("deployment upgrade time", "time", cost)
 
 	return ctrl.Result{}, nil
 }
