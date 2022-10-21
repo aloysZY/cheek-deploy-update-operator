@@ -86,7 +86,7 @@ func (r *CheekDeployUpdateReconciler) Reconcile(ctx context.Context, req ctrl.Re
 			// 这里会有一个获取的延迟，或者要判断几次获取都是可能也行
 			// 执行更新后直接去请求，资源状态可能还没变更
 			r.logger.Info("The upgrade is in progress", "deployment name", deployment.Name)
-			// 1秒日志刷新的太快了，使用 sleep 太傻了，修改使用管道
+			// 1秒日志刷新的太快了，这里需要优化
 			time.Sleep(time.Second * 30)
 			if err := r.Get(ctx, types.NamespacedName{
 				Namespace: deployment.Namespace,
