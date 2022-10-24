@@ -1,0 +1,54 @@
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  creationTimestamp: null
+  name: mutating-webhook-configuration
+webhooks:
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: webhook-service
+      namespace: system
+      path: /mutate-aloys-cheekdeployupdate-tech-v1beta1-cheekdeployupdate
+  failurePolicy: Fail
+  name: mcheekdeployupdate.kb.io
+  rules:
+  - apiGroups:
+    - aloys.cheekdeployupdate.tech
+    apiVersions:
+    - v1beta1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - cheekdeployupdates
+  sideEffects: None
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  creationTimestamp: null
+  name: validating-webhook-configuration
+webhooks:
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: webhook-service
+      namespace: system
+      path: /validate-aloys-cheekdeployupdate-tech-v1beta1-cheekdeployupdate
+  failurePolicy: Fail
+  name: vcheekdeployupdate.kb.io
+  rules:
+  - apiGroups:
+    - aloys.cheekdeployupdate.tech
+    apiVersions:
+    - v1beta1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - cheekdeployupdates
+  sideEffects: None
