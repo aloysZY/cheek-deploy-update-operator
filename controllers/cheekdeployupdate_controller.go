@@ -77,7 +77,7 @@ func (r *CheekDeployUpdateReconciler) Reconcile(ctx context.Context, req ctrl.Re
 		r.logger.Error(err, "unable to find deploy", "name", cheekDeployUpdate.Spec.DeploymentName)
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
-	r.logger.Info("Operation deployment for escalation", "deployment namespace", deployment.Namespace, "depl	oyment name", deployment.Name)
+	r.logger.Info("Operation deployment for escalation", "deployment namespace", deployment.Namespace, "depl	oyment name", deployment.Name, "deployment namespace", deployment.Namespace)
 
 	// 判断 deploy 的状态
 	// 返回 true，更新成功，返回 false 更新失败

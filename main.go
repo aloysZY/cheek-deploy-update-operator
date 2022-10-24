@@ -69,6 +69,29 @@ func main() {
 
 	ctrl.SetLogger(zap.New(zap.UseFlagOptions(&opts)))
 	printVersion()
+
+	// options := ctrl.Options{
+	// 	Scheme:                 scheme,
+	// 	MetricsBindAddress:     metricsAddr,
+	// 	Port:                   9443,
+	// 	HealthProbeBindAddress: probeAddr,
+	// 	LeaderElection:         enableLeaderElection,
+	// 	LeaderElectionID:       "24c841f1.tech",
+	// }
+	// if os.Getenv("ENVIRONMENT") == "DEV" {
+	// 	path, err := os.Getwd()
+	// 	if err != nil {
+	// 		setupLog.Error(err, "unable to get work dir")
+	// 		os.Exit(1)
+	// 	}
+	// 	options.CertDir = path + "/install/certs"
+	// }
+	// mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), options)
+	// if err != nil {
+	// 	setupLog.Error(err, "unable to start manager")
+	// 	os.Exit(1)
+	// }
+
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
 		Scheme:                 scheme,
 		MetricsBindAddress:     metricsAddr,
@@ -98,6 +121,10 @@ func main() {
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "CheekDeployUpdate")
+		os.Exit(1)
+	}
+	if err = (&aloyscheekdeployupdatev1beta1.CheekDeployUpdate{}).SetupWebhookWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create webhook", "webhook", "CheekDeployUpdate")
 		os.Exit(1)
 	}
 	// +kubebuilder:scaffold:builder

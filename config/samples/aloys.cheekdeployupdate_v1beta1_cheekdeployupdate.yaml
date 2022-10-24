@@ -4,9 +4,9 @@ metadata:
   name: cheekdeployupdate-sample
 spec:
   deploymentName: dep
-  #  之后设置命名空间为空就是default
+  #  之后设置命名空间为空就是defau
   deploymentNamespace: dev
-  deploymentImage: nginx
+  deploymentImage: nginx:1.21.0
 #  deployment:
 #    # TODO(user): Add fields here
 #    - deploymentName: dep-xx
