@@ -17,6 +17,7 @@ limitations under the License.
 package v1beta1
 
 import (
+	appsv1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -47,15 +48,21 @@ type CheekDeployUpdateSpec struct {
 type CheekDeployUpdateStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
+
+	// 这个更新后测速的时候要重新部署CRD
+	// DeploymentReplicas *int32                  `json:"deploymentReplicas"`
+	// 这里就为了省事了，直接用变更的deployment信息
+	CDUStatus appsv1.DeploymentStatus `json:"cduStatus"`
 }
 
-/*// +kubebuilder:printcolumn:name="Replicas",type="integer",JSONPath=".spec.deployment.replicas"*/
+/*// +kubebuilder:printcolumn:JSONPath=".status.deploymentReplicas",name=Replicas,type=integer*/
 
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
+// +kubebuilder:resource:categories="all",shortName="cdu",scope="Cluster"
 // +kubebuilder:printcolumn:name="Image",type="string",JSONPath=".spec.deploymentImage",description="image version"
 // +kubebuilder:printcolumn:name="Age",type="date",JSONPath=".metadata.creationTimestamp"
-// +kubebuilder:resource:categories="all",shortName="cdu",scope="Cluster"
+// +kubebuilder:printcolumn:JSONPath=".status.cduStatus",name=status,type=string
 
 // CheekDeployUpdate is the Schema for the cheekdeployupdates API
 type CheekDeployUpdate struct {

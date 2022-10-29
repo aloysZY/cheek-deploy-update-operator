@@ -117,8 +117,9 @@ func main() {
 	}
 
 	if err = (&controllers.CheekDeployUpdateReconciler{
-		Client: mgr.GetClient(),
-		Scheme: mgr.GetScheme(),
+		Client:   mgr.GetClient(),
+		Scheme:   mgr.GetScheme(),
+		Recorder: mgr.GetEventRecorderFor("CheekDeployUpdate"),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "CheekDeployUpdate")
 		os.Exit(1)

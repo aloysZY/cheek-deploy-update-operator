@@ -25,6 +25,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/client-go/tools/record"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
@@ -40,6 +41,7 @@ type CheekDeployUpdateReconciler struct {
 	logger   logr.Logger
 	newImage string
 	oldImage string
+	Recorder record.EventRecorder
 }
 
 // +kubebuilder:rbac:groups=apps,resources=deployments,verbs=get;list;watch;create;update
@@ -70,6 +72,7 @@ func (r *CheekDeployUpdateReconciler) Reconcile(ctx context.Context, req ctrl.Re
 	}
 
 	var deployment appsv1.Deployment
+	r.Recorder.Eventf(&cheekDeployUpdate, corev1.EventTypeNormal, "Query", "query the deployment name：%s, namespace: %s", cheekDeployUpdate.Spec.DeploymentName, cheekDeployUpdate.Spec.DeploymentNamespace)
 	if err := r.Get(ctx, types.NamespacedName{
 		Namespace: cheekDeployUpdate.Spec.DeploymentNamespace,
 		Name:      cheekDeployUpdate.Spec.DeploymentName,
@@ -77,6 +80,7 @@ func (r *CheekDeployUpdateReconciler) Reconcile(ctx context.Context, req ctrl.Re
 		r.logger.Error(err, "unable to find deploy", "name", cheekDeployUpdate.Spec.DeploymentName)
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
+	r.Recorder.Eventf(&cheekDeployUpdate, corev1.EventTypeNormal, "Check", "check the deployment name：%s, namespace: %s", cheekDeployUpdate.Spec.DeploymentName, cheekDeployUpdate.Spec.DeploymentNamespace)
 	r.logger.Info("Operation deployment for escalation", "deployment namespace", deployment.Namespace, "depl	oyment name", deployment.Name, "deployment namespace", deployment.Namespace)
 
 	// 判断 deploy 的状态
@@ -113,6 +117,7 @@ func (r *CheekDeployUpdateReconciler) Reconcile(ctx context.Context, req ctrl.Re
 	r.oldImage = deployment.Spec.Template.Spec.Containers[0].Image
 	if r.newImage != r.oldImage {
 		r.logger.Info("List of Pods that need to be upgraded")
+		r.Recorder.Eventf(&cheekDeployUpdate, corev1.EventTypeNormal, "Update", "Update the deployment name：%s, namespace: %s", cheekDeployUpdate.Spec.DeploymentName, cheekDeployUpdate.Spec.DeploymentNamespace)
 		if err := r.getPodList(ctx, &deployment); err != nil {
 			return ctrl.Result{}, err
 		}
@@ -133,6 +138,7 @@ func (r *CheekDeployUpdateReconciler) Reconcile(ctx context.Context, req ctrl.Re
 		}
 		if !finished {
 			// 状态错误就要回滚
+			r.Recorder.Eventf(&cheekDeployUpdate, corev1.EventTypeNormal, "rolled back", "deploy image%s, name：%s, namespace: %s", r.newImage, cheekDeployUpdate.Spec.DeploymentName, cheekDeployUpdate.Spec.DeploymentNamespace)
 			r.logger.Info("The deployment version is rolled back", "deployment name", deployment.Name, "deploy image", r.newImage)
 			// 传入cr尝试看看，会不会带动 deploy 的回滚，其实就是重新执行了 CR，然后 deploy 再次更新了，感觉这个比直接更新 deoploy 好，因为 CR 也更新了回退 CR 有一个问题，就是多个 deloy 的时候就要一起回退了
 			if err := r.rollingBackCR(ctx, &cheekDeployUpdate); err != nil {
@@ -149,11 +155,19 @@ func (r *CheekDeployUpdateReconciler) Reconcile(ctx context.Context, req ctrl.Re
 			return ctrl.Result{}, err
 		}
 	} else {
+		r.Recorder.Eventf(&cheekDeployUpdate, corev1.EventTypeWarning, "version", "The version is unchanged  name：%s, namespace: %s", cheekDeployUpdate.Spec.DeploymentName, cheekDeployUpdate.Spec.DeploymentNamespace)
+
+		if err := r.statusUpdate(ctx, &cheekDeployUpdate, &deployment); err != nil {
+			return ctrl.Result{}, err
+		}
+
 		r.logger.Info("The deployment image version is the same as the old version and does not require operation", "deployment name", deployment.Name, "deployment image", r.newImage)
 		return ctrl.Result{}, nil
 	}
 
 	r.logger.Info("deployment as well as operation completion", "deployment name", deployment.Name, "deployment image", r.newImage)
+
+	r.Recorder.Eventf(&cheekDeployUpdate, corev1.EventTypeNormal, "complete", "deployment as well as operation completion: name：%s, namespace:%s", cheekDeployUpdate.Spec.DeploymentName, cheekDeployUpdate.Spec.DeploymentNamespace)
 
 	cost := time.Since(start)
 	r.logger.Info("deployment upgrade time", "time", cost)
@@ -219,3 +233,11 @@ func (r *CheekDeployUpdateReconciler) rollingBackCR(ctx context.Context, acdu *a
 // 	}
 // 	return nil
 // }
+
+func (r *CheekDeployUpdateReconciler) statusUpdate(ctx context.Context, acdu *aloyscheekdeployupdatev1beta1.CheekDeployUpdate, deployment *appsv1.Deployment) error {
+	acdu.Status.CDUStatus = deployment.Status
+	if err := r.Status().Update(ctx, acdu); err != nil {
+		return err
+	}
+	return nil
+}
