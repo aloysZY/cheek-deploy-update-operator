@@ -92,7 +92,7 @@ func (r *CheekDeployUpdateReconciler) Reconcile(ctx context.Context, req ctrl.Re
 			// 这里会有一个获取的延迟，或者要判断几次获取都是可能也行
 			// 执行更新后直接去请求，资源状态可能还没变更
 			r.logger.Info("The upgrade is in progress", "deployment name", deployment.Name)
-			// 1秒日志刷新的太快了，这里需要优化
+			// 1秒日志刷新得太快了，这里需要优化
 			time.Sleep(time.Second * 15)
 			if err := r.Get(ctx, types.NamespacedName{
 				Namespace: deployment.Namespace,
@@ -184,19 +184,20 @@ func (r *CheekDeployUpdateReconciler) SetupWithManager(mgr ctrl.Manager) error {
 
 func (r *CheekDeployUpdateReconciler) getPodNames(pods []corev1.Pod) []string {
 	var podNames []string
-	for _, pod := range pods {
-		for _, v := range pod.Status.ContainerStatuses {
-			if v.Ready {
-				podNames = append(podNames, pod.Name)
-			}
-		}
-	}
-	return podNames
-	// // 不需要上面的额外判断了，只要上面限制了访问的时间
+	// 这里已经没有必要判断当前状态的状态了，全都算进去
 	// for _, pod := range pods {
-	// 	podNames = append(podNames, pod.Name)
+	// 	for _, v := range pod.Status.ContainerStatuses {
+	// 		if v.Ready {
+	// 			podNames = append(podNames, pod.Name)
+	// 		}
+	// 	}
 	// }
 	// return podNames
+	// // 不需要上面的额外判断了，只要上面限制了访问的时间
+	for _, pod := range pods {
+		podNames = append(podNames, pod.Name)
+	}
+	return podNames
 }
 
 func (r *CheekDeployUpdateReconciler) getPodList(ctx context.Context, deployment *appsv1.Deployment) error {
